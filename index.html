@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="te" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KathaVani - Digital Books & Audio Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        /* DRM Protection Overlay for Screenshots/Recording */
+        #drm-shield {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(15, 23, 42, 0.95);
+            z-index: 99999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 h-full flex flex-col selection:bg-amber-500 selection:text-white">
+
+    <!-- DRM Shield Warning -->
+    <div id="drm-shield">
+        <div class="max-w-md bg-slate-800 p-6 rounded-2xl border border-red-500/50 shadow-2xl">
+            <i data-lucide="shield-alert" class="w-16 h-16 text-red-500 mx-auto mb-4"></i>
+            <h2 class="text-xl font-bold mb-2">Security Protection Active</h2>
+            <p class="text-slate-300 text-sm mb-4">Screenshots and Screen Recording are strictly prohibited on KathaVani to protect author copyrights.</p>
+            <button onclick="dismissDrm()" class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-2 rounded-xl font-medium transition">I Understand</button>
+        </div>
+    </div>
+
+    <!-- Top Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 px-4 py-3 flex items-center justify-between shadow-xs">
+        <div class="flex items-center space-x-3">
+            <div class="bg-gradient-to-tr from-amber-500 to-orange-600 p-2 rounded-xl text-white shadow-md">
+                <i data-lucide="book-open" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <div class="flex items-center space-x-2">
+                    <h1 class="font-bold text-lg tracking-tight text-slate-900">KathaVani</h1>
+                    <span class="text-[10px] bg-amber-100 text-amber-800 font-semibold px-2 py-0.5 rounded-full border border-amber-200" id="lang-badge">Multi-Lang</span>
+                </div>
+                <p class="text-xs text-slate-500">Digital Books & Audio Platform</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <!-- Owner Admin Button -->
+            <button onclick="toggleOwnerModal(true)" class="flex items-center space-x-1 text-xs font-semibold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 px-3 py-2 rounded-xl transition shadow-xs">
+                <i data-lucide="key" class="w-3.5 h-3.5 text-amber-600"></i>
+                <span id="ui-owner-btn">Owner Login</span>
+            </button>
+            
+            <!-- User Profile Avatar -->
+            <div id="user-profile-btn" class="w-9 h-9 rounded-xl bg-orange-600 text-white font-bold flex items-center justify-center text-sm shadow-md cursor-pointer" onclick="switchView('settings')">
+                CS
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 overflow-y-auto pb-24" id="main-content">
+        <!-- HOME VIEW -->
+        <div id="view-home" class="p-4 max-w-4xl mx-auto space-y-6">
+            
+            <!-- Hero Banner -->
+            <div class="bg-gradient-to-br from-amber-500 via-orange-600 to-red-600 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-white/10 rounded-full blur-2xl"></div>
+                <div class="relative z-10 space-y-4">
+                    <span class="bg-white/25 text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-md">Multi-Language Audio & Read</span>
+                    <h2 class="text-2xl font-extrabold leading-tight">Explore Indian Literature in Your Mother Tongue</h2>
+                    <p class="text-amber-100 text-sm leading-relaxed">Listen with natural AI voiceover, translate instantly across 11+ regional languages, and enjoy seamless reading anywhere[span_3](start_span)[span_3](end_span).</p>
+                    
+                    <div class="flex flex-wrap gap-3 pt-2">
+                        <button onclick="switchView('search')" class="bg-white text-orange-700 font-bold px-5 py-2.5 rounded-2xl text-sm shadow-lg hover:bg-amber-50 transition flex items-center space-x-2">
+                            <i data-lucide="search" class="w-4 h-4"></i>
+                            <span id="ui-browse">Browse Library</span>
+                        </button>
+                        <button onclick="toggleAutoPayModal()" class="bg-black/30 hover:bg-black/40 text-white border border-white/20 font-medium px-4 py-2.5 rounded-2xl text-sm backdrop-blur-md transition flex items-center space-x-2">
+                            <i data-lucide="credit-card" class="w-4 h-4"></i>
+                            <span id="ui-autopay-btn">Activate Auto-Pay (₹199/mo)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Auto-Pay Status Card -->
+            <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div id="autopay-status-icon" class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
+                        <i data-lucide="lock" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-semibold text-slate-500 uppercase">Auto-Pay Subscription Status</h4>
+                        <p id="autopay-status-text" class="font-bold text-slate-800 text-sm">Locked (Payment Needed)</p>
+                    </div>
+                </div>
+                <button onclick="toggleAutoPay()" id="autopay-action-btn" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-semibold transition">
+                    Enable Auto-Pay Now
+                </button>
+            </div>
+
+            <!-- DRM Notice -->
+            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start space-x-3 text-amber-900 text-xs">
+                <i data-lucide="shield-check" class="w-5 h-5 text-amber-600 shrink-0 mt-0.5"></i>
+                <p><strong>DRM & Content Protection Notice:</strong> Screenshots, screen recording, and unauthorized audio ripping are strictly prohibited[span_4](start_span)[span_4](end_span). Watermarked session active for security.</p>
+            </div>
+
+            <!-- Library Book Catalog Section -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-bold text-lg text-slate-800 flex items-center space-x-2">
+                        <i data-lucide="library" class="w-5 h-5 text-amber-600"></i>
+                        <span>Library Book Catalog</span>
+                    </h3>
+                    <span class="text-xs text-slate-500 font-medium">10+ Regional Languages</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="book-catalog-grid">
+                    <!-- Books dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- SEARCH VIEW -->
+        <div id="view-search" class="p-4 max-w-4xl mx-auto space-y-6 hidden">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-bold text-slate-900">Search Library Books</h2>
+                <p class="text-slate-500 text-sm">Search by title, author, or keyword across all regional editions.</p>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="relative">
+                <i data-lucide="search" class="absolute left-4 top-3.5 w-5 h-5 text-slate-400"></i>
+                <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Search books (e.g., Wings of Fire, APJ Abdul Kalam)..." class="w-full bg-white border border-slate-200 rounded-2xl pl-12 pr-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-xs">
+            </div>
+
+            <!-- Search Results Container -->
+            <div id="search-results" class="space-y-4">
+                <!-- Dynamic Search Results -->
+            </div>
+
+            <!-- Book Not Found State (Notification Trigger) -->
+            <div id="search-not-found" class="hidden bg-white border border-slate-200 rounded-3xl p-8 text-center space-y-4 shadow-sm">
+                <div class="w-16 h-16 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto">
+                    <i data-lucide="book-x" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800">Book Not Found in Library</h3>
+                <p class="text-slate-500 text-sm max-w-md mx-auto">The book you searched for is currently not available in the database. Would you like to request it and get notified when the owner uploads it?</p>
+                <button onclick="requestBook()" class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-2.5 rounded-2xl font-semibold text-sm transition shadow-md">
+                    Request & Enable Update Notifications
+                </button>
+            </div>
+        </div>
+
+        <!-- SETTINGS VIEW -->
+        <div id="view-settings" class="p-4 max-w-2xl mx-auto space-y-6 hidden">
+            <div class="space-y-1">
+                <h2 class="text-2xl font-bold text-slate-900">Settings</h2>
+                <p class="text-slate-500 text-sm">Manage your account preferences, keyboard settings, and app language.</p>
+            </div>
+
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden divide-y divide-slate-100">
+                <!-- Profile Header -->
+                <div class="p-6 flex items-center space-x-4">
+                    <div class="w-14 h-14 rounded-2xl bg-orange-600 text-white font-bold text-xl flex items-center justify-center shadow-md">
+                        CS
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-lg">Customer Account</h3>
+                        <p class="text-slate-500 text-xs" id="current-user-email">customer@kathavani.com</p>
+                    </div>
+                </div>
+
+                <!-- Google/Gmail Login Option -->
+                <div class="p-5 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-red-50 text-red-600 p-2.5 rounded-xl">
+                            <i data-lucide="mail" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm">Google / Gmail Authentication</h4>
+                            <p class="text-slate-500 text-xs">Logged in securely via Google OAuth</p>
+                        </div>
+                    </div>
+                    <button onclick="triggerLogout()" class="text-red-600 hover:bg-red-50 font-semibold text-xs px-4 py-2 rounded-xl transition border border-red-200">
+                        Logout / Switch
+                    </button>
+                </div>
+
+                <!-- Website Language Selector -->
+                <div class="p-5 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="bg-blue-50 text-blue-600 p-2.5 rounded-xl">
+                                <i data-lucide="languages" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm">Website Display Language</h4>
+                                <p class="text-slate-500 text-xs">Choose interface language (English keyboard default)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <select id="site-lang-select" onchange="changeWebsiteLanguage(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        <option value="te">తెలుగు (Telugu)</option>
+                        <option value="hi">हिन्दी (Hindi)</option>
+                        <option value="en">English (Keyboard Default)</option>
+                        <option value="bn">বাংলা (Bengali)</option>
+                        <option value="mr">मराठी (Marathi)</option>
+                        <option value="ta">தமிழ் (Tamil)</option>
+                        <option value="gu">ગુજરાતી (Gujarati)</option>
+                        <option value="ur">اردو (Urdu)</option>
+                        <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                        <option value="ml">മലയാളം (Malayalam)</option>
+                        <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                    </select>
+                </div>
+
+                <!-- Website Sharing -->
+                <div class="p-5 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-emerald-50 text-emerald-600 p-2.5 rounded-xl">
+                            <i data-lucide="share-2" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm">Share KathaVani Platform</h4>
+                            <p class="text-slate-500 text-xs">Invite friends to explore audio and text library</p>
+                        </div>
+                    </div>
+                    <button onclick="shareWebsite()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-semibold transition">
+                        Share Website
+                    </button>
+                </div>
+
+                <!-- Notifications Toggle -->
+                <div class="p-5 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-purple-50 text-purple-600 p-2.5 rounded-xl">
+                            <i data-lucide="bell" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm">Missing Book Notifications</h4>
+                            <p class="text-slate-500 text-xs">Get notified when requested books are uploaded</p>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="notification-toggle" checked onchange="toggleNotifications(this.checked)" class="sr-only peer">
+                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- READER / AUDIO PLAYER VIEW -->
+        <div id="view-reader" class="p-4 max-w-3xl mx-auto space-y-6 hidden">
+            <button onclick="switchView('home')" class="flex items-center space-x-2 text-slate-600 hover:text-slate-900 font-semibold text-sm">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                <span>Back to Library</span>
+            </button>
+
+            <!-- Book Header & Language Selector -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <span class="text-xs font-bold text-amber-600 uppercase tracking-wider" id="reader-book-category">Literature</span>
+                        <h2 class="text-xl font-extrabold text-slate-900" id="reader-book-title">Book Title</h2>
+                    </div>
+                    
+                    <!-- Language Converter Dropdown for Book Content -->
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-medium text-slate-500">Audio/Text Language:</span>
+                        <select id="book-lang-select" onchange="translateBookContent(this.value)" class="bg-slate-100 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                            <option value="te">తెలుగు (Telugu)</option>
+                            <option value="hi">हिन्दी (Hindi)</option>
+                            <option value="en">English</option>
+                            <option value="bn">বাংলা (Bengali)</option>
+                            <option value="mr">मराठी (Marathi)</option>
+                            <option value="ta">தமிழ் (Tamil)</option>
+                            <option value="gu">ગુજરાતી (Gujarati)</option>
+                            <option value="ur">اردو (Urdu)</option>
+                            <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                            <option value="ml">മലയാളം (Malayalam)</option>
+                            <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- DRM Watermark & Status -->
+                <div class="bg-slate-100 rounded-xl p-3 flex items-center justify-between text-xs text-slate-600">
+                    <span class="flex items-center space-x-1.5">
+                        <i data-lucide="user-check" class="w-4 h-4 text-emerald-600"></i>
+                        <span id="reader-user-tag">customer@kathavani.com</span>
+                    </span>
+                    <span class="text-red-600 font-semibold flex items-center space-x-1">
+                        <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
+                        <span>Anti-Screenshot & Recording Active</span>
+                    </span>
+                </div>
+
+                <!-- Text Content Display (NO SHARE OPTION HERE AS REQUESTED) -->
+                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-slate-800 leading-relaxed text-sm md:text-base font-serif space-y-4" id="reader-text-content">
+                    Loading book content...
+                </div>
+
+                <!-- Social Sharing (Only Individual Book Sharing Option below) -->
+                <div class="pt-2 flex items-center justify-between border-t border-slate-100">
+                    <span class="text-xs font-semibold text-slate-500">Share this specific book:</span>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="shareBookSocial('WhatsApp')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1 transition">
+                            <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                            <span>WhatsApp</span>
+                        </button>
+                        <button onclick="shareBookSocial('Twitter')" class="bg-sky-50 hover:bg-sky-100 text-sky-700 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1 transition">
+                            <i data-lucide="twitter" class="w-3.5 h-3.5"></i>
+                            <span>Twitter</span>
+                        </button>
+                        <button onclick="copyBookLink()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1 transition">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            <span>Copy Link</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audio Player Fixed Style Card -->
+            <div class="bg-slate-900 text-white rounded-3xl p-5 shadow-2xl space-y-4 border border-slate-800">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></div>
+                        <span class="text-xs font-bold text-amber-400 uppercase tracking-widest flex items-center space-x-1">
+                            <i data-lucide="headphones" class="w-3.5 h-3.5"></i>
+                            <span>AI Natural Voice TTS Engine</span>
+                        </span>
+                    </div>
+                    <span class="text-xs text-slate-400 font-mono" id="audio-time-display">0:27 / 5:45</span>
+                </div>
+
+                <!-- Custom Scrubber (10mm skip controls & 10s backward/forward) -->
+                <div class="space-y-1">
+                    <input type="range" id="audio-scrubber" min="0" max="345" value="27" oninput="scrubAudio(this.value)" class="w-full accent-amber-500 bg-slate-800 rounded-lg h-2 cursor-pointer">
+                    <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                        <span>-10s Skip</span>
+                        <span>Scrub Bar</span>
+                        <span>+10s Skip</span>
+                    </div>
+                </div>
+
+                <!-- Audio Controls -->
+                <div class="flex items-center justify-between pt-2">
+                    <button onclick="changeSpeed()" id="speed-btn" class="bg-slate-800 hover:bg-slate-700 text-xs font-bold px-3 py-1.5 rounded-xl text-amber-400 transition">1x</button>
+                    
+                    <div class="flex items-center space-x-4">
+                        <button onclick="skipAudio(-10)" class="bg-slate-800 hover:bg-slate-700 p-2.5 rounded-2xl text-slate-300 transition hover:text-white" title="Backward 10s">
+                            <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                        </button>
+                        <button onclick="togglePlayPause()" id="play-pause-btn" class="bg-amber-500 hover:bg-amber-600 text-slate-950 p-3.5 rounded-2xl font-bold transition shadow-lg">
+                            <i data-lucide="pause" class="w-6 h-6 fill-current"></i>
+                        </button>
+                        <button onclick="skipAudio(10)" class="bg-slate-800 hover:bg-slate-700 p-2.5 rounded-2xl text-slate-300 transition hover:text-white" title="Forward 10s">
+                            <i data-lucide="rotate-cw" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    <span class="text-xs bg-emerald-950 text-emerald-400 border border-emerald-800 px-2.5 py-1 rounded-xl font-bold">Stream HD</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation Bar for Customers -->
+    <nav class="bg-white border-t border-slate-200 fixed bottom-0 left-0 right-0 z-40 px-6 py-2 flex items-center justify-around shadow-lg" id="bottom-nav">
+        <button onclick="switchView('home')" id="nav-home" class="flex flex-col items-center space-y-1 text-orange-600 transition">
+            <i data-lucide="home" class="w-6 h-6"></i>
+            <span class="text-[11px] font-bold" id="ui-nav-home">Home</span>
+        </button>
+        <button onclick="switchView('search')" id="nav-search" class="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-700 transition">
+            <i data-lucide="search" class="w-6 h-6"></i>
+            <span class="text-[11px] font-semibold" id="ui-nav-search">Search</span>
+        </button>
+        <button onclick="switchView('settings')" id="nav-settings" class="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-700 transition">
+            <i data-lucide="settings" class="w-6 h-6"></i>
+            <span class="text-[11px] font-semibold" id="ui-nav-settings">Settings</span>
+        </button>
+    </nav>
+
+    <!-- OWNER / ADMIN DASHBOARD MODAL -->
+    <div id="owner-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden border border-slate-200 my-8">
+            <div class="bg-slate-900 text-white p-6 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-amber-500 text-slate-950 p-2 rounded-xl">
+                        <i data-lucide="shield-check" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg">Owner / Admin Control Center</h3>
+                        <p class="text-xs text-slate-400">Manage library books, view customer subscriptions & revenue</p>
+                    </div>
+                </div>
+                <button onclick="toggleOwnerModal(false)" class="text-slate-400 hover:text-white p-1">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
+                <!-- Admin Stats Overview -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl">
+                        <span class="text-xs font-bold text-amber-800 uppercase">Total Revenue</span>
+                        <h3 class="text-2xl font-extrabold text-amber-900 mt-1" id="admin-total-revenue">₹1,42,850</h3>
+                        <p class="text-[10px] text-amber-700 mt-1">From active customer auto-pays</p>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl">
+                        <span class="text-xs font-bold text-emerald-800 uppercase">Active Auto-Pay Subscriptions</span>
+                        <h3 class="text-2xl font-extrabold text-emerald-900 mt-1" id="admin-active-subscribers">718 Users</h3>
+                        <p class="text-[10px] text-emerald-700 mt-1">12 cancellations this month</p>
+                    </div>
+                    <div class="bg-blue-50 border border-blue-200 p-4 rounded-2xl">
+                        <span class="text-xs font-bold text-blue-800 uppercase">Registered Customers</span>
+                        <h3 class="text-2xl font-extrabold text-blue-900 mt-1">840 Logins</h3>
+                        <p class="text-[10px] text-blue-700 mt-1">Google/Gmail OAuth authenticated</p>
+                    </div>
+                </div>
+
+                <!-- Customer Details & Auto-Pay Tracking Table -->
+                <div class="space-y-3">
+                    <h4 class="font-bold text-slate-800 text-sm flex items-center space-x-2">
+                        <i data-lucide="users" class="w-4 h-4 text-amber-600"></i>
+                        <span>Customer Gmail Logins & Subscription Activity</span>
+                    </h4>
+                    <div class="border border-slate-200 rounded-2xl overflow-hidden">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3">Customer Gmail ID</th>
+                                    <th class="p-3">Purchased Book</th>
+                                    <th class="p-3">Auto-Pay Status</th>
+                                    <th class="p-3">Action History</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-slate-700" id="admin-customer-table">
+                                <tr>
+                                    <td class="p-3 font-semibold">customer@kathavani.com</td>
+                                    <td class="p-3">Wings of Fire (Telugu/English)</td>
+                                    <td class="p-3"><span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">Active (₹199)</span></td>
+                                    <td class="p-3 text-slate-500">Subscribed</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold">rajesh.kumar92@gmail.com</td>
+                                    <td class="p-3">Anandamatha</td>
+                                    <td class="p-3"><span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">Active (₹199)</span></td>
+                                    <td class="p-3 text-slate-500">Subscribed</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold">priya.sharma@gmail.com</td>
+                                    <td class="p-3">Gitanjali</td>
+                                    <td class="p-3"><span class="bg-red-100 text-red-800 px-2 py-0.5 rounded-full font-bold">Cancelled</span></td>
+                                    <td class="p-3 text-slate-500">Auto-Pay Cancelled</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Upload New Book Form with AI TTS Simulation -->
+                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4">
+                    <h4 class="font-bold text-slate-800 text-sm flex items-center space-x-2">
+                        <i data-lucide="upload-cloud" class="w-4 h-4 text-amber-600"></i>
+                        <span>Upload New Library Book (Instant AI TTS & Translation Engine)</span>
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Book Name / Title</label>
+                            <input type="text" id="new-book-title" placeholder="e.g., Mahaprasthanam" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Author Name</label>
+                            <input type="text" id="new-book-author" placeholder="e.g., Sri Sri" class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Book Content / Text (Auto converts to human-like AI Voiceover in 11+ Languages)</label>
+                        <textarea id="new-book-text" rows="3" placeholder="Enter book paragraphs or chapters here..." class="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none"></textarea>
+                    </div>
+                    <div class="flex justify-end">
+                        <button onclick="handleOwnerUploadBook()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition shadow-md">
+                            Upload Book & Generate AI Voice
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auto-Pay Subscription Modal -->
+    <div id="autopay-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 text-center space-y-4">
+            <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center mx-auto shadow-inner">
+                <i data-lucide="credit-card" class="w-8 h-8"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900">Activate Auto-Pay Subscription</h3>
+            <p class="text-slate-500 text-sm">Unlock unlimited access to all library books across all 11+ regional languages with automatic monthly renewal of ₹199.</p>
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-left space-y-2 text-xs">
+                <div class="flex justify-between font-semibold"><span class="text-slate-600">Monthly Plan:</span><span class="text-slate-900">₹199 / month</span></div>
+                <div class="flex justify-between font-semibold"><span class="text-slate-600">Auto-Pay Protection:</span><span class="text-emerald-600">Cancel Anytime</span></div>
+                <div class="flex justify-between font-semibold"><span class="text-slate-600">Security:</span><span class="text-slate-900">Google Pay / UPI / Card</span></div>
+            </div>
+            <div class="flex space-x-3 pt-2">
+                <button onclick="toggleAutoPayModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-2xl font-bold text-sm transition">Cancel</button>
+                <button onclick="confirmAutoPayActivation()" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-3 rounded-2xl font-bold text-sm transition shadow-lg">Confirm & Pay</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // App State
+        let isAutoPayActive = false;
+        let currentAudioPlaying = true;
+        let currentSpeed = 1;
+        let currentBookId = null;
+
+        // Library Books Data Store
+        let booksDatabase = [
+            {
+                id: 1,
+                title: "Wings of Fire",
+                author: "Dr. A.P.J. Abdul Kalam",
+                category: "Autobiography / Literature",
+                image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80",
+                content: {
+                    te: "అగ్నియొక్క రెక్కలు: ఇది రామేశ్వరం నుండి వచ్చిన ఒక సాధారణ బాలుడి కథ, అతను భారతదేశపు అంతరిక్ష విమానయాన భవితను తీర్చిదిద్దాడు. కలలు అంటే మీరు నిద్రలో చూసేవి కావు, కలలు మిమ్మల్ని నిద్రపోనివ్వనివి.",
+                    hi: "अग्नि की उड़ान: यह रामेश्वरम से एक साधारण लड़के की कहानी है जिसने भारत के एयरोस्पेस भाग्य को आकार दिया। सपने वे नहीं हैं जो आप सोते समय देखते हैं, सपने वे हैं जो आपको सोने नहीं देते।",
+                    en: "Ignite your mind and soar high. This is the story of a boy from Rameswaram who went on to shape India's aerospace destiny. Dreams are not what you see in sleep, dreams are things which do not let you sleep."
+                }
+            },
+            {
+                id: 2,
+                title: "Anandamatha",
+                author: "Bankim Chandra Chatterjee",
+                category: "Historical Fiction",
+                image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=600&q=80",
+                content: {
+                    te: "ఆనందమఠం: వందేమాతరం గేతంతో కూడిన చారిత్రక నవల. దేశభక్తి మరియు స్వాతంత్ర్య పోరాట స్పూర్తిని రగిలించే అద్భుతమైన గ్రంథం.",
+                    hi: "आनंदमठ: वंदे मातरम गीत से युक्त ऐतिहासिक उपन्यास। देशभक्ति और स्वतंत्रता संग्राम की प्रेरणा जगाने वाला अद्भुत ग्रंथ।",
+                    en: "Anandamath: A historical novel featuring Vande Mataram. A magnificent literary work inspiring patriotism and the freedom struggle."
+                }
+            },
+            {
+                id: 3,
+                title: "Gitanjali",
+                author: "Rabindranath Tagore",
+                category: "Poetry & Spiritual",
+                image: "https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?auto=format&fit=crop&w=600&q=80",
+                content: {
+                    te: "గీతాంజలి: విశ్వకవి రవీంద్రనాథ్ టాగూర్ రచించిన భక్తి మరియు ఆధ్యాత్మిక కవితా సంపుటి. నోబెల్ బహుమతి పొందిన ప్రపంచ ప్రఖ్యాత గ్రంథం.",
+                    hi: "गीतांजलि: विश्वकवि रवींद्रनाथ टैगोर द्वारा रचित भक्ति और आध्यात्मिक कविता संग्रह। नोबेल पुरस्कार प्राप्त विश्व प्रसिद्ध ग्रंथ।",
+                    en: "Gitanjali: A collection of poetry by Rabindranath Tagore. A world-renowned masterpiece awarded the Nobel Prize in Literature."
+                }
+            }
+        ];
+
+        // Render Home Book Catalog
+        function renderBookCatalog() {
+            const grid = document.getElementById('book-catalog-grid');
+            grid.innerHTML = '';
+            booksDatabase.forEach(book => {
+                const card = document.createElement('div');
+                card.className = "bg-white border border-slate-200 rounded-3xl p-4 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4";
+                card.innerHTML = `
+                    <div class="flex space-x-4">
+                        <img src="${book.image}" class="w-20 h-28 object-cover rounded-2xl shadow-sm" alt="${book.title}">
+                        <div class="space-y-1 flex-1">
+                            <span class="text-[10px] font-bold text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full">${book.category}</span>
+                            <h4 class="font-bold text-slate-900 text-base leading-snug">${book.title}</h4>
+                            <p class="text-xs text-slate-500 font-medium">By ${book.author}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+                        <button onclick="openBookReader(${book.id})" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2 shadow-sm">
+                            <i data-lucide="headphones" class="w-4 h-4 text-amber-400"></i>
+                            <span>Listen & Read Library Book</span>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        // Switch App Views
+        function switchView(viewName) {
+            ['home', 'search', 'settings', 'reader'].forEach(v => {
+                document.getElementById(`view-${v}`).classList.add('hidden');
+            });
+            document.getElementById(`view-${viewName}`).classList.remove('hidden');
+
+            // Update Nav Icons
+            ['home', 'search', 'settings'].forEach(n => {
+                const el = document.getElementById(`nav-${n}`);
+                if(el) {
+                    el.className = "flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-700 transition";
+                }
+            });
+            if(viewName !== 'reader') {
+                const activeNav = document.getElementById(`nav-${viewName}`);
+                if(activeNav) {
+                    activeNav.className = "flex flex-col items-center space-y-1 text-orange-600 transition";
+                }
+                document.getElementById('bottom-nav').style.display = 'flex';
+            } else {
+                document.getElementById('bottom-nav').style.display = 'none';
+            }
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        // Open Book Reader & Check Payment Lock
+        function openBookReader(bookId) {
+            if (!isAutoPayActive) {
+                alert("🔒 Auto-Pay subscription required! Please activate Auto-Pay to open and listen to library books.");
+                toggleAutoPayModal();
+                return;
+            }
+            currentBookId = bookId;
+            const book = booksDatabase.find(b => b.id === bookId);
+            if (!book) return;
+
+            document.getElementById('reader-book-title').innerText = book.title;
+            document.getElementById('reader-book-category').innerText = book.category;
+            
+            // Default load Telugu or English text
+            const lang = document.getElementById('book-lang-select').value;
+            document.getElementById('reader-text-content').innerText = book.content[lang] || book.content['en'];
+
+            switchView('reader');
+        }
+
+        // Translate Book Content across Languages
+        function translateBookContent(langCode) {
+            const book = booksDatabase.find(b => b.id === currentBookId);
+            if (!book) return;
+            const textContent = book.content[langCode] || `[AI Translated in ${langCode.toUpperCase()}] ${book.content['en']}`;
+            document.getElementById('reader-text-content').innerText = textContent;
+        }
+
+        // Audio Controls Simulation
+        function togglePlayPause() {
+            currentAudioPlaying = !currentAudioPlaying;
+            const btn = document.getElementById('play-pause-btn');
+            btn.innerHTML = currentAudioPlaying ? '<i data-lucide="pause" class="w-6 h-6 fill-current"></i>' : '<i data-lucide="play" class="w-6 h-6 fill-current"></i>';
+            lucide.createIcons();
+        }
+
+        function skipAudio(seconds) {
+            const scrubber = document.getElementById('audio-scrubber');
+            let val = parseInt(scrubber.value) + seconds;
+            if (val < 0) val = 0;
+            if (val > 345) val = 345;
+            scrubber.value = val;
+            updateTimeDisplay(val);
+        }
+
+        function scrubAudio(val) {
+            updateTimeDisplay(val);
+        }
+
+        function updateTimeDisplay(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            document.getElementById('audio-time-display').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs} / 5:45`;
+        }
+
+        function changeSpeed() {
+            if (currentSpeed === 1) currentSpeed = 1.25;
+            else if (currentSpeed === 1.25) currentSpeed = 1.5;
+            else if (currentSpeed === 1.5) currentSpeed = 2;
+            else currentSpeed = 1;
+            document.getElementById('speed-btn').innerText = currentSpeed + 'x';
+        }
+
+        // Auto-Pay Toggle & Modals
+        function toggleAutoPayModal() {
+            const modal = document.getElementById('autopay-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        function confirmAutoPayActivation() {
+            isAutoPayActive = true;
+            toggleAutoPayModal();
+            document.getElementById('autopay-status-icon').className = "w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold";
+            document.getElementById('autopay-status-icon').innerHTML = '<i data-lucide="check-circle" class="w-5 h-5"></i>';
+            document.getElementById('autopay-status-text').innerText = "Active (₹199/mo Auto-Pay Enabled)";
+            document.getElementById('autopay-action-btn').innerText = "Cancel Auto-Pay";
+            document.getElementById('autopay-action-btn').className = "bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-xl text-xs font-semibold transition";
+            lucide.createIcons();
+            alert("✅ Auto-Pay subscription activated successfully! You can now access all library books.");
+        }
+
+        function toggleAutoPay() {
+            if (isAutoPayActive) {
+                if (confirm("Are you sure you want to cancel your Auto-Pay subscription?")) {
+                    isAutoPayActive = false;
+                    document.getElementById('autopay-status-icon').className = "w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold";
+                    document.getElementById('autopay-status-icon').innerHTML = '<i data-lucide="lock" class="w-5 h-5"></i>';
+                    document.getElementById('autopay-status-text').innerText = "Locked (Payment Needed)";
+                    document.getElementById('autopay-action-btn').innerText = "Enable Auto-Pay Now";
+                    document.getElementById('autopay-action-btn').className = "bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-semibold transition";
+                    lucide.createIcons();
+                    alert("⚠️ Auto-Pay subscription has been cancelled.");
+                }
+            } else {
+                toggleAutoPayModal();
+            }
+        }
+
+        // Search Engine & Not Found Handling
+        function handleSearch(query) {
+            const term = query.toLowerCase().trim();
+            const resultsContainer = document.getElementById('search-results');
+            const notFoundContainer = document.getElementById('search-not-found');
+            resultsContainer.innerHTML = '';
+
+            if (!term) {
+                notFoundContainer.classList.add('hidden');
+                return;
+            }
+
+            const matched = booksDatabase.filter(b => b.title.toLowerCase().includes(term) || b.author.toLowerCase().includes(term));
+            
+            if (matched.length > 0) {
+                notFoundContainer.classList.add('hidden');
+                matched.forEach(book => {
+                    const div = document.createElement('div');
+                    div.className = "bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-sm";
+                    div.innerHTML = `
+                        <div class="flex items-center space-x-3">
+                            <img src="${book.image}" class="w-12 h-16 object-cover rounded-xl">
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm">${book.title}</h4>
+                                <p class="text-xs text-slate-500">By ${book.author}</p>
+                            </div>
+                        </div>
+                        <button onclick="openBookReader(${book.id})" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition">Read / Listen</button>
+                    `;
+                    resultsContainer.appendChild(div);
+                });
+            } else {
+                notFoundContainer.classList.remove('hidden');
+            }
+        }
+
+        function requestBook() {
+            alert("📬 Book request registered and update notification enabled successfully! The owner will upload it soon.");
+        }
+
+        // Owner Modal & Upload
+        function toggleOwnerModal(show) {
+            const modal = document.getElementById('owner-modal');
+            if (show) modal.classList.remove('hidden');
+            else modal.classList.add('hidden');
+        }
+
+        function handleOwnerUploadBook() {
+            const title = document.getElementById('new-book-title').value;
+            const author = document.getElementById('new-book-author').value;
+            const text = document.getElementById('new-book-text').value;
+
+            if (!title || !author || !text) {
+                alert("Please fill in all book details.");
+                return;
+            }
+
+            const newBook = {
+                id: booksDatabase.length + 1,
+                title: title,
+                author: author,
+                category: "Uploaded Library Book",
+                image: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=600&q=80",
+                content: {
+                    te: `[తెలుగు AI వాయిస్ ఓవర్]: ${text}`,
+                    hi: `[हिन्दी AI वॉयस ओवर]: ${text}`,
+                    en: text
+                }
+            };
+
+            booksDatabase.push(newBook);
+            renderBookCatalog();
+            document.getElementById('new-book-title').value = '';
+            document.getElementById('new-book-author').value = '';
+            document.getElementById('new-book-text').value = '';
+            alert("🎉 Book uploaded successfully with AI TTS Voice synthesis in 11+ languages!");
+            toggleOwnerModal(false);
+        }
+
+        // Sharing & Notifications
+        function shareWebsite() {
+            if (navigator.share) {
+                navigator.share({ title: 'KathaVani', url: window.location.href });
+            } else {
+                alert("🔗 Website link copied to clipboard!");
+            }
+        }
+
+        function shareBookSocial(platform) {
+            alert(`📤 Book shared successfully on ${platform}!`);
+        }
+
+        function copyBookLink() {
+            alert("📋 Book link copied to clipboard!");
+        }
+
+        function toggleNotifications(enabled) {
+            alert(enabled ? "🔔 Missing book notifications enabled." : "🔕 Notifications turned off.");
+        }
+
+        function triggerLogout() {
+            alert("👋 Logged out from Google account successfully.");
+            location.reload();
+        }
+
+        function changeWebsiteLanguage(lang) {
+            const badges = { te: "తెలుగు", hi: "हिन्दी", en: "English", bn: "বাংলা", mr: "मराठी", ta: "தமிழ்", gu: "ગુજરાતી", ur: "اردو", kn: "ಕನ್ನಡ", ml: "മലയാളം", pa: "ਪੰਜਾਬੀ" };
+            document.getElementById('lang-badge').innerText = badges[lang] || "Multi-Lang";
+        }
+
+        // DRM Security Shield Trigger Simulation
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'PrintScreen') {
+                document.getElementById('drm-shield').style.display = 'flex';
+            }
+        });
+
+        function dismissDrm() {
+            document.getElementById('drm-shield').style.display = 'none';
+        }
+
+        // Initial Render
+        renderBookCatalog();
+    </script>
+</body>
+</html>
+
