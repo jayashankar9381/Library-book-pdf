@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KathaVani - Multi-Language Digital Book Platform</title>
+    <title>KathaVani - Owner Admin Dashboard & Multi-Language Platform</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -15,9 +15,7 @@
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
                         brand: {
                             50: '#fdf4f0',
@@ -32,17 +30,9 @@
         }
     </script>
     <style>
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 9999px;
-        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
     </style>
 </head>
 <body class="h-full bg-slate-50 text-slate-800 flex flex-col antialiased font-sans select-none">
@@ -60,32 +50,32 @@
                 <div class="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center mx-auto mb-2">
                     <i data-lucide="shield-check" class="w-6 h-6"></i>
                 </div>
-                <h3 class="text-xl font-bold text-slate-900">Owner Secure Login</h3>
-                <p class="text-xs text-slate-500">Restricted access for jayashankar9381@gmail.com</p>
+                <h3 class="text-xl font-bold text-slate-900">Owner Full Access Login</h3>
+                <p class="text-xs text-slate-500">jayashankar9381@gmail.com</p>
             </div>
 
             <div id="login-form-container" class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Owner Email</label>
-                    <input type="email" id="owner-email-input" value="jayashankar9381@gmail.com" readonly class="w-full px-3 py-2.5 bg-slate-100 border border-slate-300 rounded-xl text-xs font-mono text-slate-600 cursor-not-allowed">
+                    <input type="email" value="jayashankar9381@gmail.com" readonly class="w-full px-3 py-2.5 bg-slate-100 border border-slate-300 rounded-xl text-xs font-mono text-slate-600 cursor-not-allowed">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
-                    <input type="password" id="owner-password-input" placeholder="Enter owner password (default: 9381198260)" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-brand-600 focus:outline-none">
+                    <input type="password" id="owner-password-input" placeholder="Password (default: 9381198260)" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-brand-600 focus:outline-none">
                 </div>
                 <div class="flex items-center justify-between text-xs">
-                    <span class="text-slate-500">Hint: 9381198260</span>
+                    <span class="text-slate-500">Default: 9381198260</span>
                     <button onclick="showForgotPassword()" class="text-brand-600 font-bold hover:underline">Forgot Password?</button>
                 </div>
                 <button onclick="verifyOwnerLogin()" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow transition">
-                    Login to Admin Panel
+                    Login as Owner & Manage Books
                 </button>
             </div>
 
-            <!-- Forgot Password View (Hidden by default) -->
+            <!-- Forgot Password View -->
             <div id="forgot-password-container" class="space-y-4 hidden">
                 <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 text-xs text-amber-800">
-                    OTP will be sent to owner mobile/email associated with <b>jayashankar9381@gmail.com</b>.
+                    OTP will be sent to <b>jayashankar9381@gmail.com</b>.
                 </div>
                 <div id="otp-step-1">
                     <button onclick="sendOwnerOTP()" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow transition">
@@ -95,7 +85,7 @@
                 <div id="otp-step-2" class="space-y-3 hidden">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Enter 4-digit OTP</label>
-                        <input type="text" id="otp-input" maxlength="4" placeholder="e.g. 9381" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono tracking-widest text-center">
+                        <input type="text" id="otp-input" maxlength="4" placeholder="9381" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono tracking-widest text-center">
                     </div>
                     <button onclick="verifyOwnerOTP()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow transition">
                         Verify & Reset Password
@@ -114,25 +104,18 @@
             { code: 'en', name: 'English' },
             { code: 'hi', name: 'Hindi (हिन्दी)' },
             { code: 'te', name: 'Telugu (తెలుగు)' },
-            { code: 'ta', name: 'Tamil (தமிழ்)' },
-            { code: 'bn', name: 'Bengali (বাংলা)' },
-            { code: 'mr', name: 'Marathi (मराठी)' },
-            { code: 'gu', name: 'Gujarati (ગુજરાતી)' },
-            { code: 'kn', name: 'Kannada (ಕನ್ನಡ)' },
-            { code: 'ml', name: 'Malayalam (മലയാളം)' },
-            { code: 'pa', name: 'Punjabi (ਪੰਜਾਬੀ)' },
-            { code: 'ur', name: 'Urdu (اردو)' }
+            { code: 'ta', name: 'Tamil (தமிழ்)' }
         ];
 
         let books = [
             {
                 id: 'book-1',
-                title: 'The Wings of Fire (Agni Pankh)',
+                title: 'The Wings of Fire',
                 author: 'Dr. A.P.J. Abdul Kalam',
                 category: 'Autobiography',
                 cover: 'https://placehold.co/400x600/e65100/ffffff?text=Wings+of+Fire',
                 description: 'An inspiring autobiography of India’s visionary scientist.',
-                fullText: { en: "Ignite your mind and soar high...", hi: "अपने मन को प्रज्वलित करें...", te: "మీ మనస్సును వెలిగించండి..." },
+                fullText: { en: "Ignite your mind and soar high. Dreams are things which do not let you sleep." },
                 audioDuration: 345
             }
         ];
@@ -142,28 +125,16 @@
         ];
 
         let currentUser = {
-            isLoggedIn: true,
-            name: 'Aarav Sharma',
-            email: 'customer@kathavani.com',
-            role: 'customer', // 'customer' or 'owner'
-            avatar: 'https://placehold.co/100x100/e65100/ffffff?text=AS',
-            autoPayActive: false
+            name: 'Jayashankar',
+            email: 'jayashankar9381@gmail.com',
+            role: 'owner', // Defaulting to owner so you have instant access to upload books
+            avatar: 'https://placehold.co/100x100/1e293b/ffffff?text=JS',
+            autoPayActive: true
         };
 
-        let appSettings = { interfaceLang: 'en', notificationsEnabled: true };
-        let activeTab = 'home';
+        let activeTab = 'admin'; // Start directly in admin dashboard for you
         let currentReadingBook = null;
         let searchKeyword = '';
-        let searchRequested = false;
-
-        let audioState = {
-            isPlaying: false,
-            currentTime: 0,
-            duration: 0,
-            timer: null,
-            playbackRate: 1.0,
-            selectedLang: 'en'
-        };
 
         function render() {
             const appEl = document.getElementById('app');
@@ -176,17 +147,11 @@
             
             if (activeTab === 'home') mainContent.innerHTML = renderHomePage();
             else if (activeTab === 'search') mainContent.innerHTML = renderSearchPage();
-            else if (activeTab === 'settings') mainContent.innerHTML = renderSettingsPage();
-            else if (activeTab === 'admin') {
-                if (currentUser.role === 'owner') mainContent.innerHTML = renderAdminDashboard();
-                else { activeTab = 'home'; showToast('Access Denied: Owner login required.', 'error'); render(); return; }
-            } else if (activeTab === 'reader') mainContent.innerHTML = renderReaderView();
+            else if (activeTab === 'admin') mainContent.innerHTML = renderAdminDashboard();
+            else if (activeTab === 'reader') mainContent.innerHTML = renderReaderView();
 
             appEl.appendChild(mainContent);
-
-            if (activeTab !== 'reader' && activeTab !== 'admin') {
-                appEl.appendChild(renderBottomNav());
-            }
+            if (activeTab !== 'reader') appEl.appendChild(renderBottomNav());
 
             lucide.createIcons();
         }
@@ -196,31 +161,24 @@
             header.className = 'bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-sm z-30 sticky top-0';
             
             header.innerHTML = `
-                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('admin')">
                     <div class="bg-gradient-to-tr from-brand-600 to-amber-500 text-white p-2 rounded-xl shadow-md flex items-center justify-center">
                         <i data-lucide="book-open" class="w-6 h-6"></i>
                     </div>
                     <div>
                         <h1 class="font-bold text-lg text-slate-900 tracking-tight flex items-center gap-1.5">
-                            KathaVani <span class="text-xs bg-brand-50 text-brand-600 font-semibold px-2 py-0.5 rounded-full border border-brand-100">Multi-Lang</span>
+                            KathaVani <span class="text-xs bg-brand-50 text-brand-600 font-semibold px-2 py-0.5 rounded-full border border-brand-100">Owner Portal</span>
                         </h1>
-                        <p class="text-xs text-slate-500">Digital Books & Audio Platform</p>
+                        <p class="text-xs text-slate-500">Digital Books & Admin Control</p>
                     </div>
                 </div>
 
                 <div class="flex items-center space-x-3">
-                    ${currentUser.role === 'owner' ? `
-                        <button onclick="switchTab('admin')" class="px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow hover:bg-slate-800 transition flex items-center gap-1.5">
-                            <i data-lucide="shield-check" class="w-4 h-4"></i> Admin Dash
-                        </button>
-                    ` : `
-                        <button onclick="openOwnerModal()" class="px-3 py-1.5 bg-amber-50 text-amber-700 hover:bg-amber-100 text-xs font-semibold rounded-lg border border-amber-200 transition flex items-center gap-1">
-                            <i data-lucide="key" class="w-3.5 h-3.5"></i> Owner Login
-                        </button>
-                    `}
-
+                    <button onclick="switchTab('admin')" class="px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow hover:bg-slate-800 transition flex items-center gap-1.5">
+                        <i data-lucide="shield-check" class="w-4 h-4"></i> Admin Dash
+                    </button>
                     <div class="flex items-center space-x-2 pl-2 border-l border-slate-200">
-                        <img src="${currentUser.avatar}" alt="${currentUser.name}" class="w-8 h-8 rounded-full border border-slate-300 object-cover">
+                        <img src="${currentUser.avatar}" class="w-8 h-8 rounded-full border border-slate-300 object-cover">
                         <div class="hidden sm:block text-left">
                             <p class="text-xs font-semibold text-slate-800 leading-none">${currentUser.name}</p>
                             <p class="text-[10px] text-slate-500 capitalize">${currentUser.role}</p>
@@ -231,104 +189,139 @@
             return header;
         }
 
-        function renderHomePage() {
+        function renderAdminDashboard() {
             return `
-                <div class="max-w-6xl mx-auto p-4 md:p-6 space-y-6">
-                    <div class="bg-gradient-to-r from-brand-700 via-brand-600 to-amber-600 rounded-3xl p-6 md:p-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between">
-                        <div class="space-y-3 z-10 max-w-xl text-center md:text-left">
-                            <span class="bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Multi-Language Audio & Read</span>
-                            <h2 class="text-2xl md:text-4xl font-extrabold tracking-tight">Explore Indian Literature in Your Mother Tongue</h2>
-                            <p class="text-white/90 text-sm">Listen with natural AI voiceover, translate instantly across regional languages.</p>
-                            <div class="flex gap-2 pt-2 justify-center md:justify-start">
-                                <button onclick="switchTab('search')" class="bg-white text-brand-700 px-5 py-2.5 rounded-xl font-semibold text-sm shadow-md transition">Browse Library</button>
+                <div class="max-w-5xl mx-auto p-4 md:p-6 space-y-6">
+                    <div class="bg-slate-900 text-white p-6 md:p-8 rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div class="space-y-2">
+                            <div class="inline-flex items-center gap-2 bg-brand-600/30 border border-brand-500/40 px-3 py-1 rounded-full text-xs font-semibold text-brand-300">
+                                <i data-lucide="shield-check" class="w-4 h-4"></i> Logged in as: jayashankar9381@gmail.com
                             </div>
+                            <h2 class="text-2xl font-bold">Owner Book Upload & Management</h2>
+                            <p class="text-xs text-slate-400">You have full permission to upload books, configure auto-pay links, and manage requests.</p>
                         </div>
+                        <button onclick="switchTab('home')" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold rounded-xl transition">
+                            View Website Library (${books.length} Books)
+                        </button>
                     </div>
 
-                    <div class="space-y-4">
-                        <h3 class="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                            <i data-lucide="library" class="w-5 h-5 text-brand-600"></i> Featured Digital Books
-                        </h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                            ${books.map(book => renderBookCard(book)).join('')}
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Book Upload Form -->
+                        <div class="lg:col-span-2 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                            <h3 class="font-bold text-slate-900 text-lg flex items-center gap-2 border-b border-slate-100 pb-3">
+                                <i data-lucide="plus-circle" class="w-5 h-5 text-brand-600"></i> Upload New Digital Book
+                            </h3>
+                            <form onsubmit="handleBookUpload(event)" class="space-y-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-700 mb-1">Book Title</label>
+                                        <input type="text" id="upload-title" required placeholder="e.g. Mahabaratam" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-700 mb-1">Author Name</label>
+                                        <input type="text" id="upload-author" required placeholder="e.g. Vedavyasa" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none">
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-700 mb-1">Category / Genre</label>
+                                        <input type="text" id="upload-category" required placeholder="e.g. Mythology" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-700 mb-1">Cover Image URL</label>
+                                        <input type="url" id="upload-cover" value="https://placehold.co/400x600/e65100/ffffff?text=New+Book" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Short Description</label>
+                                    <textarea id="upload-desc" rows="2" required placeholder="Book summary..." class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Full Text Content</label>
+                                    <textarea id="upload-text" rows="3" required placeholder="Paste book chapters..." class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none"></textarea>
+                                </div>
+                                <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow transition">
+                                    Publish Book Instantly
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Side Panel: Payment & Requests -->
+                        <div class="space-y-6">
+                            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                                <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                                    <i data-lucide="credit-card" class="w-5 h-5 text-emerald-600"></i> Auto-Pay Link Settings
+                                </h3>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Gateway API Key / Link</label>
+                                        <input type="text" value="live_sub_key_jayashankar_9381" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Monthly Subscription Fee (₹)</label>
+                                        <input type="number" value="199" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold">
+                                    </div>
+                                    <button onclick="showToast('Auto-pay links updated successfully!', 'success')" class="w-full py-2 bg-slate-900 text-white rounded-xl text-xs font-bold">
+                                        Save Auto-Pay Config
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-3">
+                                <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                                    <i data-lucide="bell" class="w-5 h-5 text-amber-600"></i> User Requests (${requestedBooks.length})
+                                </h3>
+                                <div class="space-y-2 max-h-48 overflow-y-auto">
+                                    ${requestedBooks.map(req => `
+                                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+                                            <div>
+                                                <h4 class="font-bold text-slate-900 text-xs">${req.title}</h4>
+                                                <p class="text-[10px] text-slate-500">${req.userEmail}</p>
+                                            </div>
+                                            <button onclick="fulfillRequest('${req.id}')" class="px-2 py-1 bg-emerald-600 text-white rounded-lg text-[10px] font-bold">Fulfill</button>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             `;
         }
 
-        function renderBookCard(book) {
+        function renderHomePage() {
             return `
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col overflow-hidden">
-                    <div class="relative h-48 bg-slate-100 overflow-hidden">
-                        <img src="${book.cover}" alt="${book.title}" class="w-full h-full object-cover">
-                        <span class="absolute top-2 left-2 bg-slate-900/70 text-white text-[10px] font-semibold px-2.5 py-1 rounded-lg">${book.category}</span>
+                <div class="max-w-6xl mx-auto p-4 md:p-6 space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-bold text-slate-900">All Published Books</h3>
+                        <button onclick="switchTab('admin')" class="px-4 py-2 bg-brand-600 text-white text-xs font-bold rounded-xl">+ Upload New Book</button>
                     </div>
-                    <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
-                        <div>
-                            <h4 class="font-bold text-slate-900 text-base line-clamp-1">${book.title}</h4>
-                            <p class="text-xs text-slate-500 font-medium mt-0.5">By ${book.author}</p>
-                            <p class="text-xs text-slate-600 mt-2 line-clamp-2">${book.description}</p>
-                        </div>
-                        <div class="pt-2 border-t border-slate-100 flex gap-2">
-                            <button onclick="openReader('${book.id}', 'read')" class="flex-1 py-2 bg-brand-50 text-brand-700 text-xs font-bold rounded-xl">Read</button>
-                            <button onclick="openReader('${book.id}', 'listen')" class="flex-1 py-2 bg-brand-600 text-white text-xs font-bold rounded-xl shadow-sm">Listen</button>
-                        </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        ${books.map(book => `
+                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-3">
+                                <img src="${book.cover}" class="w-full h-40 object-cover rounded-xl">
+                                <h4 class="font-bold text-slate-900">${book.title}</h4>
+                                <p class="text-xs text-slate-500">By ${book.author}</p>
+                                <button onclick="openReader('${book.id}')" class="w-full py-2 bg-brand-50 text-brand-700 text-xs font-bold rounded-xl">Read Book</button>
+                            </div>
+                        `).join('')}
                     </div>
                 </div>
             `;
         }
 
         function renderSearchPage() {
-            return `
-                <div class="max-w-4xl mx-auto p-4 md:p-6 space-y-6">
-                    <div class="text-center space-y-2">
-                        <h2 class="text-2xl font-bold text-slate-900">Instant Book Discovery</h2>
-                    </div>
-                    <div class="relative max-w-xl mx-auto">
-                        <input type="text" id="search-input" value="${searchKeyword}" oninput="searchKeyword=this.value; render();" placeholder="Search book title..." class="w-full pl-4 pr-4 py-3.5 bg-white border border-slate-300 rounded-2xl shadow-sm text-sm focus:outline-none">
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderSettingsPage() {
-            return `
-                <div class="max-w-2xl mx-auto p-4 md:p-6 space-y-6">
-                    <h2 class="text-2xl font-bold text-slate-900">Platform Settings</h2>
-                    <div class="bg-white rounded-3xl border border-slate-200 p-5 flex items-center justify-between">
-                        <div>
-                            <h4 class="font-bold text-slate-900 text-sm">Owner Login Access</h4>
-                            <p class="text-xs text-slate-500">jayashankar9381@gmail.com</p>
-                        </div>
-                        <button onclick="openOwnerModal()" class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl">Owner Portal Login</button>
-                    </div>
-                </div>
-            `;
+            return `<div class="max-w-4xl mx-auto p-6"><h2 class="text-2xl font-bold">Search Library</h2></div>`;
         }
 
         function renderReaderView() {
             if (!currentReadingBook) return '';
             return `
-                <div class="max-w-4xl mx-auto p-4 md:p-6 space-y-6">
-                    <button onclick="switchTab('home')" class="px-3 py-2 bg-slate-100 text-slate-700 text-xs font-bold rounded-xl">Back</button>
-                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-                        <h3 class="font-bold text-lg">${currentReadingBook.title}</h3>
-                        <p class="text-sm">${currentReadingBook.fullText.en}</p>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderAdminDashboard() {
-            return `
-                <div class="max-w-5xl mx-auto p-4 md:p-6 space-y-6">
-                    <div class="bg-slate-900 text-white p-6 rounded-3xl shadow-xl flex justify-between items-center">
-                        <div>
-                            <h2 class="text-2xl font-bold">Admin Panel (Owner: jayashankar9381@gmail.com)</h2>
-                            <p class="text-xs text-slate-400">Manage digital book uploads and platform settings.</p>
-                        </div>
-                        <button onclick="logoutOwner()" class="px-4 py-2 bg-rose-600 text-white text-xs font-bold rounded-xl">Logout Owner</button>
+                <div class="max-w-4xl mx-auto p-6 space-y-4">
+                    <button onclick="switchTab('home')" class="px-3 py-2 bg-slate-100 text-xs font-bold rounded-xl">Back</button>
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-2">
+                        <h3 class="text-xl font-bold">${currentReadingBook.title}</h3>
+                        <p class="text-sm text-slate-700">${currentReadingBook.fullText.en}</p>
                     </div>
                 </div>
             `;
@@ -338,79 +331,46 @@
             const nav = document.createElement('nav');
             nav.className = 'fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-2.5 flex justify-around z-30 shadow-lg md:max-w-md md:mx-auto md:mb-4 md:rounded-2xl md:border';
             nav.innerHTML = `
-                <button onclick="switchTab('home')" class="flex flex-col items-center ${activeTab === 'home' ? 'text-brand-600' : 'text-slate-400'}"><i data-lucide="home" class="w-5 h-5"></i><span class="text-[10px]">Home</span></button>
-                <button onclick="switchTab('search')" class="flex flex-col items-center ${activeTab === 'search' ? 'text-brand-600' : 'text-slate-400'}"><i data-lucide="search" class="w-5 h-5"></i><span class="text-[10px]">Search</span></button>
-                <button onclick="switchTab('settings')" class="flex flex-col items-center ${activeTab === 'settings' ? 'text-brand-600' : 'text-slate-400'}"><i data-lucide="settings" class="w-5 h-5"></i><span class="text-[10px]">Settings</span></button>
+                <button onclick="switchTab('admin')" class="flex flex-col items-center ${activeTab === 'admin' ? 'text-brand-600 font-bold' : 'text-slate-400'}"><i data-lucide="shield-check" class="w-5 h-5"></i><span class="text-[10px]">Admin Dash</span></button>
+                <button onclick="switchTab('home')" class="flex flex-col items-center ${activeTab === 'home' ? 'text-brand-600 font-bold' : 'text-slate-400'}"><i data-lucide="library" class="w-5 h-5"></i><span class="text-[10px]">Library</span></button>
             `;
             return nav;
         }
 
         function switchTab(tab) { activeTab = tab; window.scrollTo({ top: 0, behavior: 'smooth' }); render(); }
-        function openReader(bookId, mode) { currentReadingBook = books.find(b => b.id === bookId); activeTab = 'reader'; render(); }
+        function openReader(bookId) { currentReadingBook = books.find(b => b.id === bookId); activeTab = 'reader'; render(); }
 
-        function openOwnerModal() {
-            document.getElementById('owner-login-modal').classList.remove('hidden');
-            document.getElementById('login-form-container').classList.remove('hidden');
-            document.getElementById('forgot-password-container').classList.add('hidden');
-        }
-        function closeOwnerModal() { document.getElementById('owner-login-modal').classList.add('hidden'); }
+        function handleBookUpload(e) {
+            e.preventDefault();
+            const title = document.getElementById('upload-title').value;
+            const author = document.getElementById('upload-author').value;
+            const category = document.getElementById('upload-category').value;
+            const cover = document.getElementById('upload-cover').value;
+            const desc = document.getElementById('upload-desc').value;
+            const text = document.getElementById('upload-text').value;
 
-        function verifyOwnerLogin() {
-            const pwd = document.getElementById('owner-password-input').value;
-            if (pwd === '9381198260') {
-                currentUser.role = 'owner';
-                currentUser.name = 'Jayashankar (Owner)';
-                currentUser.email = 'jayashankar9381@gmail.com';
-                currentUser.avatar = 'https://placehold.co/100x100/1e293b/ffffff?text=JS';
-                closeOwnerModal();
-                showToast('Owner login successful!', 'success');
-                switchTab('admin');
-            } else {
-                showToast('Incorrect password! Default is 9381198260', 'error');
-            }
-        }
+            books.unshift({
+                id: 'book-' + (books.length + 1),
+                title, author, category, cover,
+                description: desc,
+                fullText: { en: text },
+                audioDuration: 300
+            });
 
-        function showForgotPassword() {
-            document.getElementById('login-form-container').classList.add('hidden');
-            document.getElementById('forgot-password-container').classList.remove('hidden');
-            document.getElementById('otp-step-1').classList.remove('hidden');
-            document.getElementById('otp-step-2').classList.add('hidden');
-        }
-
-        function backToLogin() {
-            document.getElementById('login-form-container').classList.remove('hidden');
-            document.getElementById('forgot-password-container').classList.add('hidden');
-        }
-
-        function sendOwnerOTP() {
-            showToast('OTP sent to jayashankar9381@gmail.com (Mock OTP: 9381)', 'success');
-            document.getElementById('otp-step-1').classList.add('hidden');
-            document.getElementById('otp-step-2').classList.remove('hidden');
-        }
-
-        function verifyOwnerOTP() {
-            const otp = document.getElementById('otp-input').value;
-            if (otp === '9381') {
-                showToast('OTP verified! Temporary password reset to: 9381198260', 'success');
-                backToLogin();
-                document.getElementById('owner-password-input').value = '9381198260';
-            } else {
-                showToast('Invalid OTP! Please enter 9381', 'error');
-            }
-        }
-
-        function logoutOwner() {
-            currentUser.role = 'customer';
-            currentUser.name = 'Aarav Sharma';
-            currentUser.email = 'customer@kathavani.com';
-            showToast('Logged out from owner panel.', 'info');
+            showToast(`Book "${title}" uploaded successfully!`, 'success');
             switchTab('home');
+        }
+
+        function fulfillRequest(reqId) {
+            requestedBooks = requestedBooks.filter(r => r.id !== reqId);
+            showToast('Request fulfilled and user notified!', 'success');
+            render();
         }
 
         function showToast(msg, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = `${type === 'success' ? 'bg-emerald-600' : type === 'error' ? 'bg-rose-600' : 'bg-slate-900'} text-white px-4 py-3 rounded-2xl shadow-xl text-xs font-semibold`;
+            toast.className = `${type === 'success' ? 'bg-emerald-600' : 'bg-slate-900'} text-white px-4 py-3 rounded-2xl shadow-xl text-xs font-semibold`;
             toast.innerText = msg;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 3500);
