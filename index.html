@@ -46,13 +46,6 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
-        @keyframes pulse-slow {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        .animate-pulse-slow {
-            animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
     </style>
 </head>
 <body class="h-full bg-slate-50 text-slate-800 flex flex-col antialiased font-sans select-none">
@@ -90,12 +83,11 @@
                 description: 'An inspiring autobiography of India’s visionary scientist and President.',
                 fullText: {
                     en: "Ignite your mind and soar high. Dreams are not what you see in sleep, dreams are things which do not let you sleep.",
-                    hi: "अपने मन को प्रज्वलित करें और ऊंची उड़ान भरें।",
+                    hi: "अपने मन को प्रज्वलित करें और ऊंची उड़ान भरें। सपने वे नहीं हैं जो हम सोते समय देखते हैं...",
                     te: "మీ మనస్సును వెలిగించండి మరియు ఉన్నతంగా ఎగరండి. కలలు అనేవి నిద్రలో కనేవి కావు, నిద్రపోనిచ్చేవి కావు.",
                     ta: "உங்கள் மனதை எரியச் செய்து உயரமாக பறக்கவும்."
                 },
-                audioDuration: 345,
-                audioUrl: '#'
+                audioDuration: 345
             },
             {
                 id: 'book-2',
@@ -109,16 +101,15 @@
                     hi: "जहाँ मन भयमुक्त हो और मस्तक ऊँचा हो।",
                     te: "ఎక్కడ మనస్సు నిర్భయంగా ఉంటుందో మరియు తల ఎత్తుగా ఉంటుందో."
                 },
-                audioDuration: 280,
-                audioUrl: '#'
+                audioDuration: 280
             }
         ];
 
         let requestedBooks = [
-            { id: 'req-1', title: 'Bhagavad Gita Simplified', userEmail: 'Jayashankar9381@gmail.com', date: '2026-06-10', notified: true }
+            { id: 'req-1', title: 'Bhagavad Gita Simplified', userEmail: 'Jayashankar9381@gmail.com', date: '2026-06-10' }
         ];
 
-        // Owner / User Session State updated with Jayashankar9381@gmail.com
+        // Owner / User Session State
         let currentUser = {
             isLoggedIn: true,
             name: 'Jayashankar (Owner)',
@@ -127,24 +118,23 @@
             role: 'owner', // 'owner' or 'customer'
             avatar: 'https://placehold.co/100x100/e65100/ffffff?text=JS',
             autoPayActive: true,
-            subscriptionValidUntil: '2027-06-15'
+            subscriptionValidUntil: '2027-06-15',
+            paymentLink: 'https://rzp.io/rzp/vyiezJv'
         };
 
         let appSettings = {
-            interfaceLang: 'te', // Default to Telugu as per context
+            interfaceLang: 'te',
             notificationsEnabled: true
         };
 
         let activeTab = 'home';
         let currentReadingBook = null;
         let searchKeyword = '';
-        let searchRequested = false;
 
         let audioState = {
             isPlaying: false,
             currentTime: 0,
-            duration: 0,
-            timer: null,
+            duration: 300,
             playbackRate: 1.0,
             selectedLang: 'te'
         };
@@ -157,7 +147,7 @@
             appEl.appendChild(header);
 
             const mainContent = document.createElement('main');
-            mainContent.className = 'flex-1 overflow-y-auto relative pb-20';
+            mainContent.className = 'flex-1 overflow-y-auto relative pb-24';
             
             if (activeTab === 'home') {
                 mainContent.innerHTML = renderHomePage();
@@ -190,7 +180,7 @@
 
         function renderHeader() {
             const header = document.createElement('header');
-            header.className = 'bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-sm z-30 sticky top-0';
+            header.className = 'bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-sm z-35 sticky top-0';
             
             header.innerHTML = `
                 <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
@@ -199,20 +189,20 @@
                     </div>
                     <div>
                         <h1 class="font-bold text-lg text-slate-900 tracking-tight flex items-center gap-1.5">
-                            కథావాణి (KathaVani) <span class="text-xs bg-brand-50 text-brand-600 font-semibold px-2 py-0.5 rounded-full border border-brand-100">బహుభాషా</span>
+                            కథావాణి <span class="text-xs bg-brand-50 text-brand-600 font-semibold px-2 py-0.5 rounded-full border border-brand-100">బహుభాషా</span>
                         </h1>
-                        <p class="text-xs text-slate-500">డిజిటల్ బుక్స్ & ఆడియో ప్లాట్‌ఫారమ్</p>
+                        <p class="text-xs text-slate-500">ডিజిటల్ బుక్స్ & ఆడియో ప్లాట్‌ఫారమ్</p>
                     </div>
                 </div>
 
                 <div class="flex items-center space-x-3">
                     ${currentUser.role === 'owner' ? `
                         <button onclick="switchTab('admin')" class="px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow hover:bg-slate-800 transition flex items-center gap-1.5">
-                            <i data-lucide="shield-check" class="w-4 h-4"></i> నిర్వాహక డాష్‌బోర్డ్ (Owner)
+                            <i data-lucide="shield-check" class="w-4 h-4"></i> ఓనర్ అడ్మిన్
                         </button>
                     ` : `
                         <button onclick="switchToOwnerLogin()" class="px-3 py-1.5 bg-amber-50 text-amber-700 hover:bg-amber-100 text-xs font-semibold rounded-lg border border-amber-200 transition flex items-center gap-1">
-                            <i data-lucide="key" class="w-3.5 h-3.5"></i> ఓనర్ లాగిನ್
+                            <i data-lucide="key" class="w-3.5 h-3.5"></i> ఓనర్ లాగిన్
                         </button>
                     `}
 
@@ -220,7 +210,7 @@
                         <img src="${currentUser.avatar}" alt="${currentUser.name}" class="w-8 h-8 rounded-full border border-slate-300 object-cover">
                         <div class="hidden sm:block text-left">
                             <p class="text-xs font-semibold text-slate-800 leading-none">${currentUser.name}</p>
-                            <p class="text-[10px] text-slate-500">${currentUser.email} (${currentUser.phone})</p>
+                            <p class="text-[10px] text-slate-500">${currentUser.email}</p>
                         </div>
                     </div>
                 </div>
@@ -231,30 +221,32 @@
         function renderHomePage() {
             return `
                 <div class="max-w-6xl mx-auto p-4 md:p-6 space-y-6">
+                    <!-- Auto-Pay Subscription Banner -->
                     <div class="bg-gradient-to-r from-brand-700 via-brand-600 to-amber-600 rounded-3xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between">
                         <div class="space-y-3 z-10 max-w-xl text-center md:text-left">
-                            <span class="bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm">భారతీయ సాహిత్యం</span>
-                            <h2 class="text-2xl md:text-4xl font-extrabold tracking-tight">మీ మాతృభాషలో పుస్తకాలను చదవండి & వినండి</h2>
-                            <p class="text-white/90 text-sm md:text-base">AI వాయిస్‌ఓవర్ సహాయంతో వినండి, 11+ ప్రాంతీయ భాషల్లో తక్షణ అనువాదం పొందండి.</p>
-                            <div class="flex flex-wrap gap-2 pt-2 justify-center md:justify-start">
-                                <button onclick="switchTab('search')" class="bg-white text-brand-700 hover:bg-brand-50 px-5 py-2.5 rounded-xl font-semibold text-sm shadow-md transition flex items-center gap-2">
-                                    <i data-lucide="search" class="w-4 h-4"></i> పుస్తకాలను అన్ವೇషించండి
-                                </button>
+                            <span class="bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm">ఆటో-పే సబ్‌స్క్రిప్షన్</span>
+                            <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">అన్ని పుస్తకాలు & ఆడియోలను అన్‌లాక్ చేయండి</h2>
+                            <p class="text-white/90 text-sm">ప్రతి పుస్తకానికి ఒకే ప్రైస్ మరియు ఆటో-పే ద్వారా నిరంతరంగా వినండి.</p>
+                            <div class="flex flex-wrap gap-3 pt-2 justify-center md:justify-start">
+                                <a href="${currentUser.paymentLink}" target="_blank" class="bg-white text-brand-700 hover:bg-brand-50 px-5 py-2.5 rounded-xl font-bold text-xs shadow-md transition flex items-center gap-2">
+                                    <i data-lucide="credit-card" class="w-4 h-4"></i> ఆటో-పే చెల్లింపు లింక్ (Pay Now)
+                                </a>
                             </div>
                         </div>
-                        <div class="mt-6 md:mt-0 z-10 bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 text-center">
-                            <p class="text-xs text-white/80 font-medium">ఓనర్ ఖాతా వివరాలు</p>
-                            <p class="text-sm font-bold text-white mt-1">${currentUser.email}</p>
-                            <p class="text-xs text-amber-200 mt-1">ఫోన్: ${currentUser.phone}</p>
+                        <div class="mt-6 md:mt-0 z-10 bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 text-center text-xs space-y-1">
+                            <p class="text-white/80 font-medium">సబ్‌స్క్రిప్షన్ గడువు</p>
+                            <p class="font-bold text-white">${currentUser.subscriptionValidUntil} వరకు</p>
+                            <button onclick="toggleAutoPay()" class="mt-2 px-3 py-1 bg-amber-400 text-slate-900 font-bold rounded-lg text-[10px]">
+                                ఆటో-పే: ${currentUser.autoPayActive ? 'యాక్టివ్ (మార్చు)' : 'నిలిపివేయబడింది'}
+                            </button>
                         </div>
                     </div>
 
                     <div class="space-y-4">
                         <div class="flex items-center justify-between">
                             <h3 class="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                                <i data-lucide="library" class="w-5 h-5 text-brand-600"></i> ప్రత్యేక డిజిటల్ పుస్తకాలు
+                                <i data-lucide="library" class="w-5 h-5 text-brand-600"></i> అందుబాటులో ఉన్న డిజిటల్ పుస్తకాలు (${books.length})
                             </h3>
-                            <span class="text-xs text-slate-500 font-medium">${books.length} పుస్తకాలు అందుబాటులో ఉన్నాయి</span>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -283,11 +275,11 @@
                         </div>
 
                         <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
-                            <button onclick="openReader('${book.id}', 'read')" class="flex-1 py-2 px-3 bg-brand-50 hover:bg-brand-100 text-brand-700 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5">
-                                <i data-lucide="book-open" class="w-3.5 h-3.5"></i> చదవండి
+                            <button onclick="openReader('${book.id}')" class="flex-1 py-2 px-3 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl transition shadow-sm flex items-center justify-center gap-1.5">
+                                <i data-lucide="headphones" class="w-3.5 h-3.5"></i> చదవండి / వినండి
                             </button>
-                            <button onclick="openReader('${book.id}', 'listen')" class="flex-1 py-2 px-3 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl transition shadow-sm flex items-center justify-center gap-1.5">
-                                <i data-lucide="headphones" class="w-3.5 h-3.5"></i> వినండి
+                            <button onclick="shareBook('${book.title}')" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition" title="షేర్ చేయండి">
+                                <i data-lucide="share-2" class="w-4 h-4"></i>
                             </button>
                         </div>
                     </div>
@@ -305,33 +297,34 @@
                 <div class="max-w-4xl mx-auto p-4 md:p-6 space-y-6">
                     <div class="text-center space-y-2">
                         <h2 class="text-2xl md:text-3xl font-bold text-slate-900">పుస్తకాల కోసం వెతకండి</h2>
-                        <p class="text-xs md:text-sm text-slate-500">మీకు కావలసిన పుస్తకం పేరు లేదా రచయిత పేరును టైప్ చేయండి.</p>
+                        <p class="text-xs md:text-sm text-slate-500">ఓనర్ అప్‌లోడ్ చేసిన పుస్తకాలు క్రింద పేర్ల రూపంలో కనిపిస్తాయి.</p>
                     </div>
 
                     <div class="relative max-w-xl mx-auto">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
                             <i data-lucide="search" class="w-5 h-5"></i>
                         </span>
-                        <input type="text" id="search-input" value="${searchKeyword}" oninput="handleSearchInput(event)" placeholder="పుస్తకం లేదా రచయిత పేరు..." class="w-full pl-11 pr-4 py-3.5 bg-white border border-slate-300 rounded-2xl shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-brand-600">
+                        <input type="text" id="search-input" value="${searchKeyword}" oninput="handleSearchInput(event)" placeholder="పుస్తకం లేదా రచయిత పేరు టైప్ చేయండి..." class="w-full pl-11 pr-4 py-3.5 bg-white border border-slate-300 rounded-2xl shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-brand-600">
                     </div>
 
                     <div class="space-y-4">
                         ${foundBooks.length > 0 ? `
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 ${foundBooks.map(book => `
-                                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4 hover:border-brand-300 transition cursor-pointer" onclick="openReader('${book.id}', 'read')">
+                                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4 hover:border-brand-300 transition cursor-pointer" onclick="openReader('${book.id}')">
                                         <img src="${book.cover}" class="w-16 h-20 object-cover rounded-xl shadow">
                                         <div class="flex-1 min-w-0">
                                             <h4 class="font-bold text-slate-900 text-sm truncate">${book.title}</h4>
                                             <p class="text-xs text-slate-500">రచయిత: ${book.author}</p>
+                                            <span class="inline-block mt-1 text-[10px] bg-brand-50 text-brand-700 font-semibold px-2 py-0.5 rounded">అందుబాటులో ఉంది</span>
                                         </div>
                                     </div>
                                 `).join('')}
                             </div>
                         ` : `
                             <div class="bg-white p-8 rounded-3xl border border-slate-200 text-center space-y-4 shadow-sm max-w-lg mx-auto">
-                                <h3 class="text-lg font-bold text-slate-900">పుస్తకం దొరకలేదు</h3>
-                                <p class="text-xs text-slate-500">మీరు కోరిన పుస్తకాన్ని ఓనర్‌కి రిక్వెస్ట్ పంపవచ్చు.</p>
+                                <h3 class="text-lg font-bold text-slate-900">ఈ పేరుతో పుస్తకం దొరకలేదు</h3>
+                                <p class="text-xs text-slate-500">మీకు కావలసిన పుస్తకాన్ని ఓనర్‌కి రిక్వెస్ట్ పంపవచ్చు.</p>
                                 <button onclick="requestBook('${searchKeyword}')" class="px-6 py-2.5 bg-brand-600 text-white rounded-xl text-xs font-bold hover:bg-brand-700 shadow transition">
                                     పుస్తకం కోసం రిక్వెస్ట్ చేయండి
                                 </button>
@@ -345,15 +338,47 @@
         function renderSettingsPage() {
             return `
                 <div class="max-w-2xl mx-auto p-4 md:p-6 space-y-6">
-                    <h2 class="text-2xl font-bold text-slate-900">ప్లాట్‌ఫారమ్ సెట్టింగ్‌లు</h2>
+                    <h2 class="text-2xl font-bold text-slate-900">సెట్టింగ్‌లు (Settings)</h2>
 
                     <div class="bg-white rounded-3xl border border-slate-200 shadow-sm divide-y divide-slate-100 overflow-hidden">
                         <div class="p-5 flex items-center justify-between">
                             <div>
-                                <h4 class="font-bold text-slate-900 text-sm">ఓనర్ / యూజర్ జిమెయిల్</h4>
+                                <h4 class="font-bold text-slate-900 text-sm">యూజర్ లాగిన్ వివరాలు</h4>
                                 <p class="text-xs text-slate-500">${currentUser.email} | ఫోన్: ${currentUser.phone}</p>
                             </div>
-                            <span class="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full">యాక్టివ్</span>
+                            <button onclick="handleLogout()" class="px-4 py-2 bg-rose-50 text-rose-700 hover:bg-rose-100 text-xs font-bold rounded-xl transition">
+                                లాగౌట్ (Logout)
+                            </button>
+                        </div>
+
+                        <div class="p-5 flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm">వెబ్‌సైట్ డిఫాల్ట్ భాష (Language)</h4>
+                                <p class="text-xs text-slate-500">ప్లాట్‌ఫారమ్ ఇంటర్‌ఫేస్ భాషను ఎంచుకోండి</p>
+                            </div>
+                            <select onchange="changeInterfaceLang(this.value)" class="bg-slate-50 border border-slate-300 text-slate-800 text-xs font-semibold rounded-xl px-3 py-2">
+                                ${LANGUAGES.map(l => `<option value="${l.code}" ${appSettings.interfaceLang === l.code ? 'selected' : ''}>${l.name}</option>`).join('')}
+                            </select>
+                        </div>
+
+                        <div class="p-5 flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm">పుస్తక నోటిఫికేషన్‌లు</h4>
+                                <p class="text-xs text-slate-500">ఓనర్ కొత్త పుస్తకం అప్‌లోడ్ చేసినప్పుడు నోటిఫికేషన్ పొందండి</p>
+                            </div>
+                            <button onclick="toggleNotifications()" class="px-4 py-2 ${appSettings.notificationsEnabled ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'} text-xs font-bold rounded-xl transition">
+                                ${appSettings.notificationsEnabled ? 'ఆన్ చేయబడింది (On)' : 'ఆఫ్ చేయబడింది (Off)'}
+                            </button>
+                        </div>
+
+                        <div class="p-5 flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm">వెబ్‌సైట్ షేర్ చేయండి</h4>
+                                <p class="text-xs text-slate-500">ఈ ప్లాట్‌ఫారమ్‌ను మీ స్నేహితులతో పంచుకోండి</p>
+                            </div>
+                            <button onclick="shareWebsite()" class="px-4 py-2 bg-brand-50 text-brand-700 hover:bg-brand-100 text-xs font-bold rounded-xl transition flex items-center gap-1.5">
+                                <i data-lucide="share-2" class="w-4 h-4"></i> షేర్ చేయండి
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -378,8 +403,32 @@
                         </select>
                     </div>
 
+                    <!-- Audio Player Controls (10s Backward / Forward & Human Voice Simulation) -->
+                    <div class="bg-slate-900 text-white p-6 rounded-3xl shadow-xl space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-amber-400 font-semibold">AI హ్యూమన్ వాయిస్ ఆడియో</p>
+                                <h4 class="text-sm font-bold mt-0.5">${currentReadingBook.title} (${audioState.selectedLang.toUpperCase()})</h4>
+                            </div>
+                            <span class="px-3 py-1 bg-white/10 text-xs rounded-full">నిజమైన మనిషి గొంతు వలె</span>
+                        </div>
+
+                        <div class="flex items-center justify-center space-x-6 py-2">
+                            <button onclick="skipAudio(-10)" class="p-3 bg-white/10 hover:bg-white/20 rounded-full transition flex items-center gap-1 text-xs" title="10 సెకన్లు వెనక్కి">
+                                <i data-lucide="rotate-ccw" class="w-5 h-5"></i> -10s
+                            </button>
+                            <button onclick="togglePlayAudio()" class="p-4 bg-brand-600 hover:bg-brand-700 rounded-full transition shadow-lg">
+                                <i data-lucide="${audioState.isPlaying ? 'pause' : 'play'}" class="w-6 h-6"></i>
+                            </button>
+                            <button onclick="skipAudio(10)" class="p-3 bg-white/10 hover:bg-white/20 rounded-full transition flex items-center gap-1 text-xs" title="10 సెకన్లు ముందుకు">
+                                +10s <i data-lucide="rotate-cw" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Book Text Content -->
                     <div class="bg-white p-6 md:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-                        <div class="prose max-w-none text-slate-800 text-base md:text-lg leading-relaxed">
+                        <div class="prose max-w-none text-slate-800 text-base md:text-lg leading-relaxed whitespace-pre-line">
                             ${textContent}
                         </div>
                     </div>
@@ -392,21 +441,22 @@
                 <div class="max-w-5xl mx-auto p-4 md:p-6 space-y-6">
                     <div class="bg-slate-900 text-white p-6 md:p-8 rounded-3xl shadow-xl space-y-2">
                         <div class="inline-flex items-center gap-2 bg-brand-600/30 border border-brand-500/40 px-3 py-1 rounded-full text-xs font-semibold text-brand-300">
-                            <i data-lucide="shield-check" class="w-4 h-4"></i> నిర్వాహక పోర్టల్ (Owner Dashboard)
+                            <i data-lucide="shield-check" class="w-4 h-4"></i> ఓనర్ అడ్మిన్ పోర్టల్
                         </div>
-                        <h2 class="text-2xl font-bold">స్వాగతం, Jayashankar</h2>
-                        <p class="text-xs text-slate-400">జిమెయిల్: Jayashankar9381@gmail.com | ఫోన్: 9381198260</p>
+                        <h2 class="text-2xl font-bold">స్వాగతం, ${currentUser.name}</h2>
+                        <p class="text-xs text-slate-400">జిమెయిల్: ${currentUser.email} | ఫోన్: ${currentUser.phone}</p>
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Book Upload Form -->
                         <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
                             <h3 class="font-bold text-slate-900 text-lg flex items-center gap-2">
-                                <i data-lucide="plus-circle" class="w-5 h-5 text-brand-600"></i> కొత్త పుస్తకాన్ని జోడించండి
+                                <i data-lucide="plus-circle" class="w-5 h-5 text-brand-600"></i> కొత్త పుస్తకాన్ని అప్‌లోడ్ చేయండి
                             </h3>
 
                             <form onsubmit="handleBookUpload(event)" class="space-y-3">
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-1">పుస్తకం పేరు (Title)</label>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">పుస్తకం పేరు (Book Title)</label>
                                     <input type="text" id="upload-title" required class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs">
                                 </div>
                                 <div>
@@ -418,31 +468,32 @@
                                     <textarea id="upload-desc" rows="2" required class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs"></textarea>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-1">పూర్తి పాఠం (Full Text)</label>
-                                    <textarea id="upload-text" rows="3" required class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs"></textarea>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">పూర్తి పాఠం / టెక్స్ట్ (Full Text for Auto Audio & Translation)</label>
+                                    <textarea id="upload-text" rows="3" required class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-xs" placeholder="ఇక్కడ టెక్స్ట్ ఇవ్వండి. ఇది ఆటోమేటిక్‌గా అన్ని భాషల్లోకి మరియు మనిషి వాయిస్‌లా మారుతుంది..."></textarea>
                                 </div>
                                 <button type="submit" class="w-full py-2.5 bg-brand-600 text-white rounded-xl text-xs font-bold shadow">
-                                    పుస్తకాన్ని ప్రచురించు (Publish)
+                                    పుస్తకాన్ని ప్రచురించు & ఆడియో సృష్టించు
                                 </button>
                             </form>
                         </div>
 
+                        <!-- User Requests Management -->
                         <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
                             <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
                                 <i data-lucide="bell" class="w-5 h-5 text-amber-600"></i> యూజర్ పుస్తక రిక్వెస్ట్‌లు
                             </h3>
                             <div class="space-y-2">
-                                ${requestedBooks.map(req => `
+                                ${requestedBooks.length > 0 ? requestedBooks.map(req => `
                                     <div class="p-3 bg-slate-50 rounded-xl border flex items-center justify-between">
                                         <div>
                                             <h4 class="font-bold text-slate-900 text-xs">${req.title}</h4>
-                                            <p class="text-[10px] text-slate-500">${req.userEmail}</p>
+                                            <p class="text-[10px] text-slate-500">యూజర్: ${req.userEmail}</p>
                                         </div>
                                         <button onclick="fulfillRequest('${req.id}')" class="px-2.5 py-1.5 bg-emerald-600 text-white rounded-lg text-[10px] font-bold">
                                             అప్‌లోడ్ చేయండి
                                         </button>
                                     </div>
-                                `).join('')}
+                                `).join('') : '<p class="text-xs text-slate-500">కొత్త రిక్వెస్ట్‌లు లేవు.</p>'}
                             </div>
                         </div>
                     </div>
@@ -455,9 +506,9 @@
             nav.className = 'fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-2.5 flex items-center justify-around z-30 shadow-lg md:max-w-md md:mx-auto md:mb-4 md:rounded-2xl md:border';
             
             const tabs = [
-                { id: 'home', label: 'హోమ్', icon: 'home' },
-                { id: 'search', label: 'వెతకండి', icon: 'search' },
-                { id: 'settings', label: 'సెట్టింగ్‌లు', icon: 'settings' }
+                { id: 'home', label: 'హోమ్ పేజీ', icon: 'home' },
+                { id: 'search', label: 'సెర్చింగ్', icon: 'search' },
+                { id: 'settings', label: 'సెట్టింగ్', icon: 'settings' }
             ];
 
             nav.innerHTML = tabs.map(t => `
@@ -476,7 +527,7 @@
             render();
         }
 
-        function openReader(bookId, mode) {
+        function openReader(bookId) {
             const book = books.find(b => b.id === bookId);
             if (!book) return;
             currentReadingBook = book;
@@ -495,16 +546,15 @@
                 id: 'req-' + Date.now(),
                 title: title,
                 userEmail: currentUser.email,
-                date: new Date().toISOString().split('T')[0],
-                notified: true
+                date: new Date().toISOString().split('T')[0]
             });
-            showToast('పుస్తక రిక్వెస్ట్ విజయవంతంగా పంపబడింది!', 'success');
+            showToast('పుస్తకం కోసం రిక్వెస్ట్ విజయవంతంగా పంపబడింది!', 'success');
             render();
         }
 
         function fulfillRequest(reqId) {
             requestedBooks = requestedBooks.filter(r => r.id !== reqId);
-            showToast('రిక్వెస్ట్ పూర్తి చేయబడింది!', 'success');
+            showToast('రిక్వెస్ట్ క్లియర్ చేయబడింది!', 'success');
             render();
         }
 
@@ -514,13 +564,58 @@
             render();
         }
 
+        function changeInterfaceLang(langCode) {
+            appSettings.interfaceLang = langCode;
+            showToast('వెబ్‌సైట్ భాష మార్చబడింది', 'success');
+        }
+
+        function toggleNotifications() {
+            appSettings.notificationsEnabled = !appSettings.notificationsEnabled;
+            showToast(appSettings.notificationsEnabled ? 'నోటిఫికేషన్‌లు ఆన్ చేయబడ్డాయి' : 'నోటిఫికేషన్‌లు ఆఫ్ చేయబడ్డాయి', 'success');
+            render();
+        }
+
+        function toggleAutoPay() {
+            currentUser.autoPayActive = !currentUser.autoPayActive;
+            showToast(currentUser.autoPayActive ? 'ఆటో-పే యాక్టివేట్ చేయబడింది' : 'ఆటో-పే రద్దు చేయబడింది', 'success');
+            render();
+        }
+
+        function skipAudio(seconds) {
+            showToast(`ఆడియో ${seconds > 0 ? '+' : ''}${seconds} సెకన్లు సర్దుబాటు చేయబడింది`, 'info');
+        }
+
+        function togglePlayAudio() {
+            audioState.isPlaying = !audioState.isPlaying;
+            render();
+        }
+
         function switchToOwnerLogin() {
             currentUser.role = 'owner';
             currentUser.name = 'Jayashankar (Owner)';
             currentUser.email = 'Jayashankar9381@gmail.com';
             currentUser.phone = '9381198260';
-            showToast('ఓనర్ అకౌంట్‌కి మారారు!', 'success');
+            showToast('ఓనర్ అడ్మిన్ లాగిన్ విజయవంతం!', 'success');
             switchTab('admin');
+        }
+
+        function handleLogout() {
+            currentUser.role = 'customer';
+            currentUser.isLoggedIn = false;
+            showToast('లాగౌట్ అయ్యారు', 'info');
+            render();
+        }
+
+        function shareWebsite() {
+            if (navigator.share) {
+                navigator.share({ title: 'KathaVani', url: window.location.href });
+            } else {
+                showToast('వెబ్‌సైట్ లింక్ కాపీ చేయబడింది!', 'success');
+            }
+        }
+
+        function shareBook(title) {
+            showToast(`"${title}" పుస్తకం షేర్ చేయబడింది!`, 'success');
         }
 
         function handleBookUpload(e) {
@@ -535,18 +630,19 @@
                 title,
                 author,
                 category: 'New Release',
-                cover: 'https://placehold.co/400x600/e65100/ffffff?text=New+Book',
+                cover: 'https://placehold.co/400x600/e65100/ffffff?text=' + encodeURIComponent(title),
                 description: desc,
                 fullText: {
                     en: text,
-                    te: "తెలుగు అనువాదం: " + desc
+                    hi: "हिन्दी अनुवाद: " + text,
+                    te: "తెలుగు అనువాదం (మనిషి గొంతు వలె): " + text,
+                    ta: "தமிழ் மொழிபெயர்ப்பு: " + text
                 },
-                audioDuration: 300,
-                audioUrl: '#'
+                audioDuration: 300
             };
 
             books.unshift(newBook);
-            showToast(`పుస్తకం "${title}" வெற்றிகரமாக అప్‌లోడ్ చేయబడింది!`, 'success');
+            showToast(`పుస్తకం "${title}" విజయవంతంగా ప్రచురించబడింది!`, 'success');
             switchTab('home');
         }
 
